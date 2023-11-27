@@ -164,7 +164,7 @@
         
 
         function guardarEnExcel() {
-            // Obtén el número de registro actual (puedes ajustar esto según tus necesidades)
+            // Obtiene el número de registro actual
             var numeroRegistro = obtenerNumeroRegistro();
 
             // Obtiene los valores del formulario
@@ -179,21 +179,20 @@
 
             // Crea el arreglo de datos con el ID_PROMO y el número de registro
             var data = [
-                ["ID_PROMO", "Marca", "Cod. Artículo", "Monto a Accionar", "Descuento Publicación", "Fecha de Inicio", "Fecha de Fin", "Evento", "Atributo"],
                 ["PROMO" + numeroRegistro, marca, cod_art, montoAccionar, descuento_publicacion, fecha_inicio, fecha_fin, evento, atributo]
             ];
 
             // Carga el archivo existente si está disponible
-            //var existingWorkbook = null;
+            var existingWorkbook = null;
             try {
-                existingWorkbook = XLSX.readFile("info_promociones.xlsx");
+                existingWorkbook = XLSX.read("info_promociones.xlsx");
             } catch (error) {
                 // El archivo no existe o hay un error al leerlo
                 console.error("No se pudo cargar el archivo existente:", error);
             }
 
             // Crea una nueva hoja de cálculo o utiliza la existente
-            var ws = existingWorkbook ? existingWorkbook.Sheets["Promociones"] : XLSX.utils.aoa_to_sheet(data);
+            var ws = existingWorkbook ? existingWorkbook.Sheets["Promociones"] : XLSX.utils.aoa_to_sheet([]);
 
             // Agrega las nuevas filas al final de la hoja de cálculo
             XLSX.utils.sheet_add_aoa(ws, data, { origin: -1 });
