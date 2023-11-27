@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario de Promociones</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 20px;
+        }
+
+        h2 {
+            color: #333;
+        }
+
+        form {
+            max-width: 600px;
+            margin: auto;
+        }
+
+        label {
+            display: block;
+            margin-top: 10px;
+            color: #555;
+        }
+
+        input,
+        textarea,
+        select {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.3/xlsx.full.min.js"></script>
+
+
+</head>
+<body>
+
+    <h2>Formulario de Promociones</h2>
+
+    <form action="procesar_formulario.php" method="post">
+        <label for="marca">Marca:</label>
+        <select id="marca" name="marca" onchange="actualizarArticulos()" required>
+            <option value="" disabled selected>Selecciona una marca</option>
+            <option value="INTEGRAL">Integral</option>
+            <option value="NOT_CO">NotCo</option>
+            <option value="SILK">Silk</option>
+            <option value="GREEN_FOOD_MAKERS">Green Food Makers</option>
+        </select>
+
+        <label for="cod_art">Descripción del Artículo:</label>
+        <select id="cod_art" name="cod_art" required>
+            <option value="" disabled selected>Selecciona primero una marca</option>
+        </select>
+
+        <label for="monto_accion">Monto a Accionar:</label>
+        <input type="number" id="monto_accion" name="monto_accion" step="0.01" required>
+
+        <label for="desc_publicacion">Descuento Publicacion:</label>
+        <input type="number" id="desc_publicacion" name="desc_publicacion" step="0.01" required>
+
+        <label for="fecha_inicio">Fecha de Inicio:</label>
+        <input type="date" id="fecha_inicio" name="fecha_inicio" required>
+
+        <label for="fecha_fin">Fecha de Fin:</label>
+        <input type="date" id="fecha_fin" name="fecha_fin" required>
+
+        <label for="evento">Evento:</label>
+        <select id="evento" name="evento" required>
+            <option value="" disabled selected>Selecciona un evento</option>
+            <option value="sinEvento">Sin Evento</option>
+            <option value="blackFriday">Black Friday</option>
+            <option value="navidad">Navidad</option>
+        </select>
+
+        <label for="atributo">Atributo:</label>
+        <input type="text" id="atributo" name="atributo" required>
+
+        <button type="submit">Enviar</button>
+    </form>
+    <script>
+     
+
+        // Función para actualizar los artículos según la marca seleccionada
+        function actualizarArticulos() {
+            var marcaSeleccionada = document.getElementById("marca").value;
+            var codArticulo = document.getElementById("cod_art");
+
+            // Limpiar la lista actual de opciones
+            codArticulo.innerHTML = '';
+
+            // Obtener la lista de artículos según la marca seleccionada
+            var opcionesArticulos = obtenerArticulosPorMarca(marcaSeleccionada);
+
+            // Agregar las nuevas opciones al campo de artículos
+            opcionesArticulos.forEach(function(articulo) {
+                var opcion = document.createElement("option");
+                opcion.value = articulo.Cod_art;
+                opcion.text = articulo.Descripcion_art;
+                codArticulo.add(opcion);
+            });
+        }
+
+        // Función que devuelve la lista de artículos según la marca seleccionada
+        function obtenerArticulosPorMarca(marca) {
+            // Esta función podría conectarse a una base de datos o utilizar datos en memoria según sea necesario
+            // Aquí se utiliza una estructura de datos simple para demostrar el concepto
+            var articulos = {
+                INTEGRAL: [
+                    { Cod_art: "INTE02", Descripcion_art: "Barra Almendra y Nuez x 42g - Integral" },
+                    { Cod_art: "INTE04", Descripcion_art: "Barra Banana y Nuez x 42g - Integral" }
+                ],
+                NOT_CO: [
+                    { Cod_art: "NOTC01", Descripcion_art: "Not Ice Cream Chocolate Chips x 316g - NotCo" },
+                    { Cod_art: "NOTC02", Descripcion_art: "Not Ice Cream Strawberries & Cream x 316g - NotCo" },
+                    { Cod_art: "NOTC03", Descripcion_art: "Not Mayo Original x 325g - NotCo" }
+                ],
+                SILK: [
+                    { Cod_art: "SILK01", Descripcion_art: "Bebida de Almendras Chocolate x 190 ml Endulzada - Silk" },
+                    { Cod_art: "SILK02", Descripcion_art: "Bebida de Almendras Chocolate x 946ml - Silk" },
+                    { Cod_art: "SILK03", Descripcion_art: "Bebida de Coco x 946ml - Silk" }
+                ],
+                GREEN_FOOD_MAKERS: [
+                    { Cod_art: "GFMA07", Descripcion_art: "Bebida de Almendras Original x 330ml - Green Food Makers" },
+                    { Cod_art: "GFMA08", Descripcion_art: "Bebida de Almendras Original x 910ml - Green Food Makers" },
+                    { Cod_art: "GFMA09", Descripcion_art: "Bebida de Almendras Vainilla x 330ml - Green Food Makers" },
+                    { Cod_art: "GFMA10", Descripcion_art: "Bebida de Almendras Vainilla x 910ml - Green Food Makers" }
+                ]
+            };
+
+            return articulos[marca] || [];
+
+            
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            // Agrega un listener al formulario para capturar el evento submit
+            document.querySelector("form").addEventListener("submit", function (event) {
+                // Previene el comportamiento por defecto del formulario (enviar datos al servidor)
+                event.preventDefault();
+                // Llama a la función para guardar en Excel
+                guardarEnExcel();
+            });
+        });
+        
+
+        function guardarEnExcel() {
+            // Obtén el número de registro actual (puedes ajustar esto según tus necesidades)
+            var numeroRegistro = obtenerNumeroRegistro();
+
+            // Obtiene los valores del formulario
+            var marca = document.getElementById('marca').value;
+            var cod_art = document.getElementById('cod_art').value;
+            var montoAccionar = document.getElementById('monto_accion').value;
+            var descuento_publicacion = document.getElementById('desc_publicacion').value;
+            var fecha_inicio = document.getElementById('fecha_inicio').value;
+            var fecha_fin = document.getElementById('fecha_fin').value;
+            var evento = document.getElementById('evento').value;
+            var atributo = document.getElementById('atributo').value;
+
+            // Crea el arreglo de datos con el ID_PROMO y el número de registro
+            var data = [
+                ["ID_PROMO", "Marca", "Cod. Artículo", "Monto a Accionar", "Descuento Publicación", "Fecha de Inicio", "Fecha de Fin", "Evento", "Atributo"],
+                ["PROMO" + numeroRegistro, marca, cod_art, montoAccionar, descuento_publicacion, fecha_inicio, fecha_fin, evento, atributo]
+            ];
+
+            // Carga el archivo existente si está disponible
+            //var existingWorkbook = null;
+            try {
+                existingWorkbook = XLSX.readFile("info_promociones.xlsx");
+            } catch (error) {
+                // El archivo no existe o hay un error al leerlo
+                console.error("No se pudo cargar el archivo existente:", error);
+            }
+
+            // Crea una nueva hoja de cálculo o utiliza la existente
+            var ws = existingWorkbook ? existingWorkbook.Sheets["Promociones"] : XLSX.utils.aoa_to_sheet(data);
+
+            // Agrega las nuevas filas al final de la hoja de cálculo
+            XLSX.utils.sheet_add_aoa(ws, data, { origin: -1 });
+
+            // Crea un nuevo libro de Excel y agrega la hoja de cálculo
+            var wb = existingWorkbook || XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Promociones");
+
+            // Guarda el archivo actualizado
+            XLSX.writeFile(wb, "info_promociones.xlsx");
+        }
+
+        function obtenerNumeroRegistro() {
+            var contador = localStorage.getItem("contador") || 1;
+            localStorage.setItem("contador", ++contador);
+            return contador;
+        }
+    
+    </script>
+    
+
+</body>
+</html>
